@@ -1,0 +1,3 @@
+# Cohesive Repositories
+
+Cohesive Repositories are built more around themes and problems rather than solutions. Unlike classical repositories they encourage storing not only code, but also documentation and other textual artifacts together in a single repository and sometimes even in the same folder. They also encourage placing of individual cohesive tools in a single repository, without expecting them to have a direct dependency. Finally, they also encourage storing different solutions to the same problem in the same master folder and don't require giving preference to a specific solution.
