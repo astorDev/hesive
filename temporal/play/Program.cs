@@ -16,11 +16,11 @@ if (trailerPrepared)
 
 class Video(
     string content,
-    bool Copyrighted
+    bool copyrighted
 )
 {
     public string Content { get; set; } = content;
-    public bool Copyrighted { get; set;} = Copyrighted;
+    public bool Copyrighted { get; set;} = copyrighted;
 }
 
 class Camera
