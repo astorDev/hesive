@@ -26,13 +26,11 @@ class Camera
     [Obsolete("Use flow without assignment by calling MakeMovie() instead")]
     public void ShootMovie()
     {
-        Shot = new Video("An interesting movie from start to finish", true);
+        Shot = MakeMovie();
     }
 
-    public static Video MakeMovie()
-    {
-        return new Video("An interesting movie from start to finish", true);
-    }
+    public static Video MakeMovie() => 
+        new ("An interesting movie from start to finish", true);
 }
 
 class Cinema(Camera camera)

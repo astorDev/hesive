@@ -29,15 +29,8 @@ class Camera
     }
 }
 
-class Cinema(Camera camera)
+class Cinema
 {
-    public void ShowTo(string audience)
-    {
-        if (camera.Shot == null) throw new Exception("No movie has been shot yet");
-
-        Show(camera.Shot.Content, audience);
-    }
-
     public static void Show(string videoContent, string audience)
     {
         Console.WriteLine($"Showing `{videoContent}` to " + audience + " in the cinema");

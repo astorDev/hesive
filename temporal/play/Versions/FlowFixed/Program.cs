@@ -1,7 +1,3 @@
-var camera = new Camera();
-var ads = new Ads();
-var marketing = new Marketing(ads, camera);
-
 var movie = Camera.MakeMovie();
 Cinema.Show(movie.Content, "academies");
 var trailer = Marketing.PrepareTrailer(movie);
