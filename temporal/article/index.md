@@ -96,15 +96,200 @@ class Ads
 }
 ```
 
+## Step 1: Make Temporal Coupling Runtime-Explicit with Exceptions
+
+```csharp
+class Cinema(Camera camera)
+{
+    public void ShowTo(string audience)
+    {
+        if (camera.Shot == null) throw new Exception("No movie has been shot yet");
+
+        Console.WriteLine($"Showing `{camera.Shot.Content}` to " + audience + " in the cinema");
+    }
+}
+
+class Marketing(Ads ads, Camera camera)
+{
+    public void PrepareTrailer()
+    {
+        var video = camera.Shot;
+        if (video == null) throw new Exception("No movie has been shot yet");
+
+        video.Content = video.Content.Split(' ')[1];
+
+        ads.Trailer = video;
+        ads.ShowWatermark = video.Copyrighted;
+    }
+}
+
+class Ads
+{
+    public Video? Trailer { get; set; }
+    public bool? ShowWatermark { get; set; }
+
+    public void ShowTrailer()
+    {
+        var trailer = Trailer ?? throw new Exception("No trailer has been prepared yet");
+        var showWatermark = ShowWatermark ?? throw new Exception("ShowWatermark has not been set yet");
+
+        Console.WriteLine($"Showing: `{trailer.Content}{(showWatermark ? " WM" : "")}` during the ads break");
+    }
+}
+```
+
+## Step 2: Introduce Stateless Methods on Leaf-Services
+
+```csharp
+Cinema.Show(camera.Shot!.Content, "academies");
+
+class Cinema
+{
+    public static void Show(string videoContent, string audience)
+    {
+        Console.WriteLine($"Showing `{videoContent}` to " + audience + " in the cinema");
+    }
+}
+```
+
+```csharp
+class Ads
+{
+    [Obsolete("Use flow without assignment by calling Show(Trailer trailer) instead")]
+    public bool ShowWatermark { get; set; }
+
+    [Obsolete("Use flow without assignment by calling Show(Trailer trailer) instead")]
+    public Video? Trailer { get; set; }
+
+    [Obsolete("Use flow without assignment by calling Show(Trailer trailer) instead")]
+    public void ShowTrailer()
+    {
+        if (Trailer == null) throw new ("No trailer has been prepared yet");
+
+        var trailer = new Trailer(Trailer.Content, ShowWatermark);
+        Show(trailer);
+    }
+
+    public static void Show(Trailer trailer)
+    {
+        Console.WriteLine($"Showing: `{trailer.Content}{(trailer.ShowWatermark ? " WM" : "")}` during the ads break");
+    }
+}
+```
+
+## Step 3: Introduce Stateless Methods on Intermediary Services
+
+```csharp
+class Camera
+{
+    public Video? Shot;
+
+    [Obsolete("Use flow without assignment by calling MakeMovie() instead")]
+    public void ShootMovie()
+    {
+        Shot = MakeMovie();
+    }
+
+    public static Video MakeMovie() => 
+        new ("An interesting movie from start to finish", true);
+}
+```
+
+```csharp
+class Marketing(Ads ads, Camera camera)
+{
+    [Obsolete("Use flow without assignment by calling PrepareTrailer(Video video) instead")]
+    public void PrepareTrailer()
+    {
+        var video = camera.Shot ?? throw new("No movie has been shot yet");
+        var trailer = PrepareTrailer(video);
+
+        video.Content = trailer.Content;
+
+        ads.Trailer = video;
+        ads.ShowWatermark = trailer.ShowWatermark;
+    }
+
+    public Trailer PrepareTrailer(Video video) => new(
+        Content: video.Content.Split(' ')[1],
+        ShowWatermark: video.Copyrighted
+    );
+}
+```
+
+## Step 4: Update the Flow to Use Stateless Methods
+
+```csharp
+var movie = Camera.MakeMovie();
+Cinema.Show(movie.Content, "academies");
+var trailer = Marketing.PrepareTrailer(movie);
+Ads.Show(trailer);
+
+// Now showing the movie to the public won't contain bugs:
+Cinema.Show(movie.Content, "public");
+```
+
+## Step 5: Clean Up by Removing All Statefulness
+
+```csharp
+record Video(
+    string Content,
+    bool Copyrighted
+);
+```
+
+```csharp
+var movie = Camera.MakeMovie();
+Cinema.Show(movie.Content, "academies");
+var trailer = Marketing.PrepareTrailer(movie);
+Ads.Show(trailer);
+
+// Now showing the movie to the public won't contain bugs:
+Cinema.Show(movie.Content, "public");
+
+record Video(
+    string Content,
+    bool Copyrighted
+);
+
+class Camera
+{
+    public static Video MakeMovie() => 
+        new("An interesting movie from start to finish", true);
+}
+
+class Cinema
+{
+    public static void Show(string videoContent, string audience) => 
+        Console.WriteLine($"Showing `{videoContent}` to " + audience + " in the cinema");
+}
+
+class Marketing
+{
+    public static Trailer PrepareTrailer(Video video) => new(
+        Content: video.Content.Split(' ')[1],
+        ShowWatermark: video.Copyrighted
+    );
+}
+
+class Ads
+{
+    public static void Show(Trailer trailer) => 
+        Console.WriteLine($"Showing: `{trailer.Content}{(trailer.ShowWatermark ? " WM" : "")}` during the ads break");
+}
+
+public record Trailer(string Content, bool ShowWatermark);
+```
+
 ## TL;DR
 
 In this article, we've refactored a codebase, poisoned with temporal coupling from head to toe. We did it delicately following these steps:
 
-1. Make It Explicit With Exceptions
-2. Fix Leaves (Parts of the code that don't have anything depending on them)
-3. Introduce Uncoupled Alternatives
-4. Fix the Flow
-5. Final Cleanup: Introduction of Immutability
+1. Make Temporal Coupling Runtime-Explicit with Exceptions
+2. Introduce Stateless Methods on Leaf-Services
+3. Introduce Stateless Methods on Intermediary Services
+4. Update the Flow to Use Stateless Methods
+5. Clean Up by Removing All Statefulness
 
 You should be able to apply this checklist to deal with the temporal coupling when spotting it in your code.
 
