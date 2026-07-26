@@ -34,7 +34,10 @@ class Cinema(Camera camera)
 {
     public void ShowTo(string audience)
     {
-        if (camera.Shot == null) throw new Exception("No movie has been shot yet");
+        if (camera.Shot == null)
+        {
+            throw new Exception("No movie has been shot yet");
+        }
 
         Console.WriteLine($"Showing `{camera.Shot.Content}` to " + audience + " in the cinema");
     }
@@ -44,7 +47,11 @@ class Marketing(Ads ads, Camera camera)
 {
     public void PrepareTrailer()
     {
-        var video = camera.Shot ?? throw new("No movie has been shot yet");
+        var video = camera.Shot;
+        if (video == null)
+        {
+            throw new Exception("No movie has been shot yet");
+        }
 
         video.Content = video.Content.Split(' ')[1];
 
@@ -61,7 +68,10 @@ class Ads
 
     public void ShowTrailer()
     {
-        if (Trailer == null) throw new ("No trailer has been prepared yet");
+        if (Trailer == null)
+        {
+            throw new Exception("No trailer has been prepared yet");
+        }
 
         Console.WriteLine($"Showing: `{Trailer.Content}{(ShowWatermark ? " WM" : "")}` during the ads break");
     }
