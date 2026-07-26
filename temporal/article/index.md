@@ -1,14 +1,14 @@
-# Temporal Coupling: What Is It And How to Deal With It?
+# Temporal Coupling: What Is It and How to Deal With It?
 
-> Identifying Temporal Coupling and Refactoring It Step-By-Step.
+> Identifying Temporal Coupling and Refactoring It Step-by-step.
 
 ![It Poisons Your Codebase!](thumb.png)
 
-When working with a legacy codebase, you will likely see a tons of issues with the code. However, we can't just fix everything - we need to find a root cause to attack. Often many of the problems have one common theme - Temporal Coupling. 
+When working with a legacy codebase, you will likely see a ton of issues with the code. However, we can't just fix everything - we need to find a root cause to attack. Often, many of the problems have one common theme - Temporal Coupling.
 
-Temporal coupling is an implicit expectation on the order of operations (method calls, assignments, etc.) in a codebase. This might sound like a narrow problem, but it spreads throughout a codebase fast and quietly making it extremely hard to reason about. In this article, we will study an example of a code, poisoned with temporal coupling and figure out a step-by-step strategy for dealing with it.
+Temporal coupling is an implicit expectation on the order of operations (method calls, assignments, etc.) in a codebase. This might sound like a narrow problem, but it spreads throughout a codebase fast and quietly, making it extremely hard to reason about. In this article, we will study an example of code, poisoned with temporal coupling and figure out a step-by-step strategy for dealing with it.
 
-> Or jump straight to the [TLDR](#tldr) in the end of this article to see the plan cheatsheet.
+> Or jump straight to the [TL;DR](#tldr) at the end of this article to see the plan cheat sheet.
 
 ## Temporal Coupling Examples (Many Variants)
 
@@ -98,16 +98,16 @@ class Ads
 
 ## TLDR;
 
-In this article, we've refactored a codebase, poisoned with temporal coupling from head to toes. We did it delicately following those steps:
+In this article, we've refactored a codebase, poisoned with temporal coupling from head to toe. We did it delicately following these steps:
 
 1. Make It Explicit With Exceptions
-2. Fix Leaves (Parts of the code, that doesn't Have Anything Depending on Them)
+2. Fix Leaves (Parts of the code that don't have anything depending on them)
 3. Introduce Uncoupled Alternatives
 4. Fix the Flow
 5. Final Cleanup: Introduction of Immutability
 
-You should be able to apply this checklist to deal with the temporal coupling, when spotting one in your code. 
+You should be able to apply this checklist to deal with the temporal coupling when spotting it in your code.
 
-This article, as well, as the code samples, are part of the repository, called `Hesive`. The repository theme is cohesiveness in software. Don't hesitate to [check it out on GitHub](https://github.com/astordev/hesive) and give it a star.  ⭐
+This article, as well as the code samples, is part of the repository called `Hesive`. The repository theme is cohesiveness in software. Don't hesitate to [check it out on GitHub](https://github.com/astordev/hesive) and give it a star. ⭐
 
 Claps for this article are also highly appreciated! 😉
