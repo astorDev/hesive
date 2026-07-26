@@ -125,14 +125,15 @@ class Marketing(Ads ads, Camera camera)
 
 class Ads
 {
+    public Video? Trailer { get; set; }
     public bool? ShowWatermark { get; set; }
 
     public void ShowTrailer()
     {
-        if (Trailer == null) throw new("No trailer has been prepared yet");
-        if (ShowWatermark == null) throw new("No trailer has been prepared yet");
+        var trailer = Trailer ?? throw new Exception("No trailer has been prepared yet");
+        var showWatermark = ShowWatermark ?? throw new Exception("ShowWatermark has not been set yet");
 
-        Console.WriteLine($"Showing: `{Trailer.Content}{(ShowWatermark ? " WM" : "")}` during the ads break");
+        Console.WriteLine($"Showing: `{trailer.Content}{(showWatermark ? " WM" : "")}` during the ads break");
     }
 }
 ```
