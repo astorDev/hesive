@@ -96,7 +96,7 @@ class Ads
 }
 ```
 
-## TLDR;
+## TL;DR
 
 In this article, we've refactored a codebase, poisoned with temporal coupling from head to toe. We did it delicately following these steps:
 
