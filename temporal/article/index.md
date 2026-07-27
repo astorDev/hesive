@@ -4,19 +4,19 @@
 
 ![It Poisons Your Codebase!](thumb.png)
 
-When working with a legacy codebase, you will likely see a ton of issues with the code. However, we can't just fix everything - we need to find a root cause to attack. Often, many of the problems have one common theme - Temporal Coupling.
+When working with a legacy codebase, you will likely see a ton of issues with the code. However, we can't just fix everything - we need to find a root cause to attack. Often, many of the problems have one common theme: temporal coupling.
 
 Temporal coupling is an implicit expectation on the order of operations (method calls, assignments, etc.) in a codebase. 
 
-This might sound like a narrow problem, but it spreads throughout a codebase fast and quietly, making it extremely hard to reason about. In this article, we will study an example of code, poisoned with temporal coupling and figure out a step-by-step strategy for dealing with it.
+This might sound like a narrow problem, but it spreads throughout a codebase fast and quietly, making it extremely hard to reason about. In this article, we will study an example of code, poisoned with temporal coupling, and figure out a step-by-step strategy for dealing with it.
 
 > Or jump straight to the [TL;DR](#tldr) at the end of this article to see the plan cheat sheet.
 
 ## Temporal Coupling Example (Many Variants Inside)
 
-Perhaps, the main issue with temporal coupling is that the code overall looks somewhat reasonable. Every class on its own doesn't look too bad - fixing it seems like a lot of work, while the benefits are unclear. Not to mention, that temporal coupling takes many forms so it's hard to refactor it semi-automatically.
+Perhaps the main issue with temporal coupling is that the code overall looks somewhat reasonable. Every class on its own doesn't look too bad - fixing it seems like a lot of work, while the benefits are unclear. Not to mention that temporal coupling takes many forms, so it's hard to refactor it semi-automatically.
 
-Due to that reason, we will refactor a complete "Program", rather than an individual thing. Let me give you our initial code:
+For that reason, we will refactor a complete "Program", rather than an individual thing. Let me give you our initial code:
 
 ```csharp
 var camera = new Camera();
@@ -104,15 +104,15 @@ As you might have noticed, the code is held together by an unwritten contract: s
 
 `Marketing.PrepareTrailer` even mutates `Shot.Content` in place, which is exactly why re-running `cinema.ShowTo("public")` afterwards prints the trimmed trailer text instead of the movie - the bug hiding in the comment at the top of the snippet. Every class here is only as safe as the order it happens to be called in.
 
-It's important to keep in mind that this is a test code. Unlike with a real legacy code we won't see tens of dependencies, when clicking on a method. 
+It's important to keep in mind that this is test code. Unlike with real legacy code, we won't see tens of dependencies when clicking on a method. 
 
 So what should we do first?
 
 ## Step 1: Make Temporal Coupling Runtime-Explicit with Exceptions
 
-Let's say we forgot to call `Camera.ShootMovie()`. The program will run without any errors, but neither public nor critics will see anything. The code will swallow the problem. The least we can do is make the problems explicit in runtime by throwing an exception when things don't go as planned. Here's how our methods will look after:
+Let's say we forgot to call `Camera.ShootMovie()`. The program will run without any errors, but neither the public nor critics will see anything. The code will swallow the problem. The least we can do is make the problems explicit at runtime by throwing an exception when things don't go as planned. Here's how our methods will look after:
 
-> Note: This change is a breaking change and it will be painful. Don't forget to do regression testing. The good news is that the change is 100% isolated - you can fix it in as little places as you want and still enjoy the effect.
+> Note: This change is a breaking change, and it will be painful. Don't forget to do regression testing. The good news is that the change is 100% isolated - you can fix it in as few places as you want and still enjoy the effect.
 
 ```csharp
 class Cinema(Camera camera)
@@ -154,13 +154,13 @@ class Ads
 }
 ```
 
-We gained our first "win". However, the goal is of course to replace runtime errors with a compile one. This is a long journey though. What should be our first step?
+We gained our first "win". However, the goal is of course to replace runtime errors with compile-time ones. This is a long journey though. What should be our first step?
 
 ## Step 2: Introduce Stateless Methods on Leaf-Services
 
-Refactoring a legacy system is hard because changing anything requires tracking a ton of dependent classes. However, in every system there are leaves - methods or classes which do a "final" action. Methods on which other classes don't really depend. Fixing those first is usually a good first step. In our case, there are two examples of such services: `Cinema` and `Ads`.
+Refactoring a legacy system is hard because changing anything requires tracking a ton of dependent classes. However, in every system there are leaves - methods or classes that do a "final" action. Methods on which other classes don't really depend. Fixing those first is usually a good first step. In our case, there are two examples of such services: `Cinema` and `Ads`.
 
-Refactoring `Cinema` is quite trivial and we can move it right to the final version by redoing it's `Show` method and fixing it's single call in Program flow:
+Refactoring `Cinema` is quite trivial, and we can move it right to the final version by redoing its `Show` method and fixing its single call in the program flow:
 
 ```csharp
 Cinema.Show(camera.Shot!.Content, "academies");
@@ -174,11 +174,11 @@ class Cinema
 }
 ```
 
-> Note that `Show` became static method. This clearly shows that it no longer relies on any state. In real system, the method likely won't become static due to having dependent services or configuration, but the important part is to remove it's reliance on other object's state.
+> Note that `Show` became a static method. This clearly shows that it no longer relies on any state. In real system, the method likely won't become static due to having dependent services or configuration, but the important part is to remove its reliance on other objects' state.
 
-With `Ads` the situation is more complicated though. It's intertwined with `Marketing` feeling it's properties. In a real code base it may be not just `Marketing`, but a whole set of other services. Refactoring it in one go can be too big task. The thing we can do quite easily though is ADD a stateless method and hint other services to use it with `Obsolete` attribute. Here's how the code will look like:
+With `Ads`, the situation is more complicated, though. It's intertwined with `Marketing`, feeling its properties. In a real codebase, it may not just be `Marketing`, but a whole set of other services. Refactoring it in one go can be too big a task. The thing we can do quite easily, though, is ADD a stateless method and hint other services to use it with an `Obsolete` attribute. Here's how the code will look:
 
-> We will also add an immutable object, called Trailer to serve as a better representation of what an `Ads` need
+> We will also add an immutable object, called Trailer, to serve as a better representation of what an `Ads` needs
 
 ```csharp
 public record Trailer(string Content, bool ShowWatermark);
@@ -213,7 +213,7 @@ Both leaf services are now free of any dependency on `Camera` or on their own fi
 
 ## Step 3: Introduce Stateless Methods on Intermediary Services
 
-The same idea we used with `Ads` can be applied on other services, including those having dependants. Here's how we can introduce a stateless alternative to `Camera`:
+The same idea we used with `Ads` can be applied to other services, including those having dependants. Here's how we can introduce a stateless alternative to `Camera`:
 
 ```csharp
 class Camera
@@ -231,7 +231,7 @@ class Camera
 }
 ```
 
-One benefit of fixing leaf-services first is that it begs introduction of new models for the data, those services needs. With `Trailer` model in place, refactoring of `Marketing` is quite easy:
+One benefit of fixing leaf services first is that it begs the introduction of new models for the data those services need. With the `Trailer` model in place, refactoring of `Marketing` is quite easy:
 
 ```csharp
 class Marketing(Ads ads, Camera camera)
@@ -255,7 +255,7 @@ class Marketing(Ads ads, Camera camera)
 }
 ```
 
-Note that after step 1 we didn't really changes any behavior at all. However, we already extracted much smaller, clear and more easy to test methods, which are also can serve as a foundation for the proper flow.
+Note that after step 1, we didn't really change any behavior at all. However, we already extracted much smaller, clearer, and easier-to-test methods, which can also serve as a foundation for the proper flow.
 
 ## Step 4: Update the Flow to Use Stateless Methods
 
@@ -273,11 +273,11 @@ Cinema.Show(movie.Content, "public");
 
 > Notice that the bug from the very beginning of the article - showing an already-trimmed trailer content to the public - is now structurally impossible. `movie.Content` is never mutated in place anymore, so every call to `Cinema.Show` gets the full movie, exactly as expected.
 
-The code is now good. However, we won't get number of lines reduced, as we should typically expect from a good refactoring. Also, we haven't took preventive measures for our code not degrade again. Let's do it in our final step: Clean Up.
+The code is now good. However, we won't get the number of lines reduced, as we should typically expect from a good refactoring. Also, we haven't taken preventive measures for our code not to degrade again. Let's do it in our final step: Clean Up.
 
 ## Step 5: Clean Up by Removing All Statefulness
 
-Fundamental building block of a code with temporal coupling are mutable models. Unfortunatelly, we can't normally start with refactoring them because they are used in enormous amount of places. Gladly now we have refactored our methods and can make our `Video` model immutable:
+A fundamental building block of code with temporal coupling is mutable models. Unfortunately, we can't normally start with refactoring them because they are used in an enormous number of places. Gladly, now we have refactored our methods and can make our `Video` model immutable:
 
 ```csharp
 record Video(
@@ -286,7 +286,7 @@ record Video(
 );
 ```
 
-Would that model be immutable in the first place all the other problems would be significantly harder to introduce. Probably we could even get a proper code in the first place. Here's how our Program looks without temporal coupling after removing all the methods marked as `Obsolete`:
+If that model were immutable in the first place, all the other problems would be significantly harder to introduce. Probably we could even get proper code in the first place. Here's how our Program looks without temporal coupling after removing all the methods marked as `Obsolete`:
 
 ```csharp
 var movie = Camera.MakeMovie();
@@ -331,14 +331,14 @@ class Ads
 public record Trailer(string Content, bool ShowWatermark);
 ```
 
-As you might see, now our method don't even look like they have a "logic". They didn't really had it in the first place - temporal coupling, however, masquarades to bussiness logic very well. Let's recap!
+As you might see, now our methods don't even look like they have "logic". They didn't really have it in the first place - temporal coupling, however, masquarades to bussiness logic very well. Let's recap!
 
 ## TL;DR
 
 In this article, we've refactored a codebase, poisoned with temporal coupling from head to toe. We did it delicately following these steps:
 
 1. Make Temporal Coupling Runtime-Explicit with Exceptions
-2. Introduce Stateless Methods on Leaf-Services
+2. Introduce Stateless Methods on Leaf Services
 3. Introduce Stateless Methods on Intermediary Services
 4. Update the Flow to Use Stateless Methods
 5. Clean Up by Removing All Statefulness
