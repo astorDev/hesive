@@ -104,7 +104,7 @@ As you might have noticed, the code is held together by an unwritten contract: s
 
 `Marketing.PrepareTrailer` even mutates `Shot.Content` in place, which is exactly why re-running `cinema.ShowTo("public")` afterwards prints the trimmed trailer text instead of the movie - the bug hiding in the comment at the top of the snippet. Every class here is only as safe as the order it happens to be called in.
 
-It's important to keep in mind that this is a test code. Unlike with a real legacy code we won't see tens of dependencies, when clicking on a method. 
+It's important to keep in mind that this is test code. Unlike with a real legacy code we won't see tens of dependencies, when clicking on a method. 
 
 So what should we do first?
 
