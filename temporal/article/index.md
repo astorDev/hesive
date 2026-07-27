@@ -14,7 +14,7 @@ This might sound like a narrow problem, but it spreads throughout a codebase fas
 
 ## Temporal Coupling Example (Many Variants Inside)
 
-Perhaps, the main issue with temporal coupling is that the code overall looks somewhat reasonable. Every class on it's own doesn't look too bad - fixing it seems like a lot of work, while the benefits are unclear. Not to mention, that temporal coupling takes many forms so it's hard to refactor it semi-automatically.
+Perhaps, the main issue with temporal coupling is that the code overall looks somewhat reasonable. Every class on its own doesn't look too bad - fixing it seems like a lot of work, while the benefits are unclear. Not to mention, that temporal coupling takes many forms so it's hard to refactor it semi-automatically.
 
 Due to that reason, we will refactor a complete "Program", rather than an individual thing. Let me give you our initial code:
 
@@ -106,13 +106,13 @@ As you might have noticed, the code is held together by an unwritten contract: s
 
 It's important to keep in mind that this is a test code. Unlike with a real legacy code we won't see tens of dependencies, when clicking on a method. 
 
-.So what should we do first?
+So what should we do first?
 
 ## Step 1: Make Temporal Coupling Runtime-Explicit with Exceptions
 
 Let's say we forgot to call `Camera.ShootMovie()`. The program will run without any errors, but neither public nor critics will see anything. The code will swallow the problem. The least we can do is make the problems explicit in runtime by throwing an exception when things don't go as planned. Here's how our methods will look after:
 
-> Note: The Change IS a breaking change and it will be painful. Don't forget to do regressive testing. The good news is that the change is 100% isolated - you can fix it in as little places as you want and still enjoy the effect.
+> Note: This change is a breaking change and it will be painful. Don't forget to do regression testing. The good news is that the change is 100% isolated - you can fix it in as little places as you want and still enjoy the effect.
 
 ```csharp
 class Cinema(Camera camera)
@@ -158,7 +158,7 @@ We gained our first "win". However, the goal is of course to replace runtime err
 
 ## Step 2: Introduce Stateless Methods on Leaf-Services
 
-Refactoring a legacy system is hard because changing anything require tracking a ton of dependent classes. However, in every system there are leaves - methods or classes which do a "final" action. Methods on which other classes don't really depend. Fixing those fist is usually a good first step. In our case, there are two examples of such services: `Cinema` and `Ads`.
+Refactoring a legacy system is hard because changing anything requires tracking a ton of dependent classes. However, in every system there are leaves - methods or classes which do a "final" action. Methods on which other classes don't really depend. Fixing those first is usually a good first step. In our case, there are two examples of such services: `Cinema` and `Ads`.
 
 Refactoring `Cinema` is quite trivial and we can move it right to the final version by redoing it's `Show` method and fixing it's single call in Program flow:
 
