@@ -1,10 +1,10 @@
 namespace Template.Playground;
 
 [TestClass]
-public class HelloTests
+public class SmokeTests
 {
     [TestMethod]
-    public void Message()
+    public void Basic()
     {
         var hello = "Hello, Tests!";
 
