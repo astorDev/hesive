@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageType>Template</PackageType>
+    <PackageVersion>1.1</PackageVersion>
+    <PackageId>Hesive.Play.Template</PackageId>
+    <Title>Hesive Play Template</Title>
+    <Authors>Astor</Authors>
+    <Description>Hesive Play Template</Description>
+    <PackageTags>dotnet-new;templates</PackageTags>
+    <TargetFramework>net10.0</TargetFramework>
+
+    <IncludeContentInPack>true</IncludeContentInPack>
+    <IncludeBuildOutput>false</IncludeBuildOutput>
+    <ContentTargetFolders>content</ContentTargetFolders>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="template\**" Exclude="template\**\bin\**;template\**\obj\**" />
+    <Compile Remove="**\*" />
+  </ItemGroup>
+
+</Project>

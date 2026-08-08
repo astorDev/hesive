@@ -1,0 +1,4 @@
+<Solution>
+    <Project Path="play/template/Template.Playground.csproj" />
+    <Project Path="temporal/play/Hesive.Temporal.Playground.csproj" />
+</Solution>

@@ -1,0 +1,17 @@
+name: Publish Play.Template
+on:
+  push:
+    paths:
+      - 'play/template/**'
+      - '.github/workflows/play-template-nuget.yaml'
+  workflow_dispatch:
+
+jobs:
+  publish:
+    name: Pack & Publish nuget
+    runs-on: ubuntu-latest
+    steps:
+      - uses: astorDev/versy/calver/nuget@main
+        with:
+          project: play/Hesive.Play.Template
+          nuget-api-key: ${{ secrets.NUGET_API_KEY }}
