@@ -1,0 +1,17 @@
+name: Apps Nuget
+on:
+  push:
+    paths:
+      - 'apps/lib/**'
+      - '.github/workflows/apps-nuget.yaml'
+  workflow_dispatch:
+
+jobs:
+  publish:
+    name: Pack & Publish nuget
+    runs-on: ubuntu-latest
+    steps:
+      - uses: astorDev/versy/calver/nuget@main
+        with:
+          project: apps/lib/Hesive.Apps
+          nuget-api-key: ${{ secrets.NUGET_API_KEY }}

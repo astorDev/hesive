@@ -1,4 +1,4 @@
-ARGS ?= greet . --name John
+ARGS ?= . --name John
 
 run:
 	dotnet run -- $(ARGS)
