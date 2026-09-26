@@ -4,3 +4,7 @@ pr:
 	git save "$(TITLE)"
 	gh pr create --title "$(TITLE)" --body "" || true
 	gh pr view --web
+
+lib:
+	dotnet new lib --output $(MODULE)/lib
+	copaster-magic $(MODULE)/lib --project=Hesive --module=$(MODULE)
