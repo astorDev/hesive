@@ -1,4 +1,5 @@
 <Solution>
+    <Project Path="alpha/lib/Hesive.Alpha.csproj" />
     <Project Path="apps/lib/Hesive.Apps.csproj" />
     <Project Path="apps/play/Hesive.Apps.Playground.csproj" />
     <Project Path="play/template/Template.Playground.csproj" />

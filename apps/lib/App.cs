@@ -2,7 +2,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
-public record App(IServiceProvider ServiceProvider, ILogger<App> Logger, IConfiguration Configuration)
+namespace Hesive;
+
+public record App(IServiceProvider Services, ILogger<App> Logger, IConfiguration Configuration)
 {
     public static App From(IServiceProvider serviceProvider)
     {

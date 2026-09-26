@@ -1,0 +1,17 @@
+name: Module.Name Nuget
+on:
+  push:
+    paths:
+      - 'your_path/**'
+      - '.github/workflows/module-name-nuget.yaml'
+  workflow_dispatch:
+
+jobs:
+  publish:
+    name: Pack & Publish nuget
+    runs-on: ubuntu-latest
+    steps:
+      - uses: astorDev/versy/calver/nuget@main
+        with:
+          project: your_path/Hesive.Module.Name
+          nuget-api-key: ${{ secrets.NUGET_API_KEY }}

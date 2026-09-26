@@ -1,0 +1,12 @@
+{
+    "$schema": "http://json.schemastore.org/template",
+    "author": "Astor",
+    "classifications": [ "Web", "WebAPI" ], 
+    "name": "Hesive Lib",
+    "identity": "Hesive.Lib",         
+    "shortName": "lib",
+    "tags": {
+      "language": "C#",
+      "type":"project"
+    }
+}

@@ -8,7 +8,7 @@ builder.Logging.AddNiceShell();
 builder.Services.AddAsRootCommand<GreetCommand>();
 
 var app = builder.Build();
-var rootCommand = app.ServiceProvider.GetRequiredService<RootCommand>();
+var rootCommand = app.Services.GetRequiredService<RootCommand>();
 
 var parsed = rootCommand.Parse(args);
 return await parsed.InvokeAsync();
