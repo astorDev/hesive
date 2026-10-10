@@ -11,3 +11,4 @@ description: Rules for C# code
 7. Nesting like this `DoSomething(Parse(x))` is not allowed: Extract intermediate results to variables.
 8. Use Primary Constructors wherever possible.
 9. Simplify new expressions: Use target-typed `new` wherever possible.
+10. Methods can NOT have more than 4 arguments.
