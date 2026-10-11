@@ -12,3 +12,4 @@ description: Rules for C# code
 8. Use Primary Constructors wherever possible.
 9. Simplify new expressions: Use target-typed `new` wherever possible.
 10. Methods can NOT have more than 4 arguments.
+11. Nested methods are NOT allowed.
